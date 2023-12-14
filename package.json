@@ -1,0 +1,32 @@
+{
+  "name": "bpy-workspace",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "postinstall": "nuxt prepare",
+    "preview": "nuxt preview"
+  },
+  "dependencies": {
+    "@antfu/eslint-config": "^0.43.1",
+    "@guolao/vue-monaco-editor": "^1.4.0",
+    "@types/formidable": "^3.4.5",
+    "buffer": "^6.0.3",
+    "dotenv": "^16.3.1",
+    "eslint": "^8.51.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "formidable": "^3.5.1",
+    "json-editor-vue": "^0.11.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "latest",
+    "@nuxtjs/tailwindcss": "^6.9.5",
+    "daisyui": "^4.4.2",
+    "nuxt": "^3.8.2",
+    "vue": "^3.3.8",
+    "vue-router": "^4.2.5"
+  }
+}
