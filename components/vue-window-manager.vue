@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue'
+import { watch } from 'vue'
 
 const emit = defineEmits<{
   (e: 'dragStart', value: symbol): void
@@ -27,19 +27,6 @@ const windowId = defineModel<symbol>('windowId', { default: undefined })
 const titleIcon = defineModel<string>('titleIcon', { default: undefined })
 const showMaximizeButton = defineModel<boolean>('showMaximizeButton', { default: undefined })
 const showMinimizeButton = defineModel<boolean>('showMinimizeButton', { default: undefined })
-const buttonsCol = ref(1)
-const buttonAreaWidth = ref(0)
-
-function buttonCol() {
-  buttonsCol.value = 1
-  if (showMaximizeButton.value) {
-    buttonsCol.value++
-  }
-  if (showMinimizeButton.value) {
-    buttonsCol.value++
-  }
-  buttonAreaWidth.value = buttonsCol.value * 46.6
-}
 
 function startDrag() {
   if (!windowId.value) {
@@ -97,113 +84,11 @@ function close() {
 watch(
   windowInnerWidth,
   (newValue) => {
-    windowInnerWidth.value = newValue
-    if (left?.value || 0 + (width?.value || 0) > (windowInnerWidth.value || 0)) {
-      left.value = (windowInnerWidth.value || 0) - (width.value || 0)
+    if (left?.value || 0 + (width?.value || 0) > (newValue || 0)) {
+      left.value = (newValue || 0) - (width.value || 0)
     }
   }
 )
-watch(
-  top,
-  (newValue) => {
-    top.value = newValue
-  }
-)
-watch(
-  left,
-  (newValue) => {
-    left.value = newValue
-  }
-)
-watch(
-  width,
-  (newValue) => {
-    width.value = newValue
-  }
-)
-watch(
-  height,
-  (newValue) => {
-    height.value = newValue
-  }
-)
-watch(
-  minWidth,
-  (newValue) => {
-    minWidth.value = newValue
-  }
-)
-watch(
-  minHeight,
-  (newValue) => {
-    minHeight.value = newValue
-  }
-)
-watch(
-  isResizing,
-  (newValue) => {
-    isResizing.value = newValue
-  }
-)
-watch(
-  isActive,
-  (newValue) => {
-    isActive.value = newValue
-  }
-)
-watch(
-  isMaximized,
-  (newValue) => {
-    isMaximized.value = newValue
-  }
-)
-watch(
-  maxWidth,
-  (newValue) => {
-    maxWidth.value = newValue
-  }
-)
-watch(
-  maxHeight,
-  (newValue) => {
-    maxHeight.value = newValue
-  }
-)
-watch(
-  title,
-  (newValue) => {
-    title.value = newValue
-  }
-)
-watch(
-  titleIcon,
-  (newValue) => {
-    titleIcon.value = newValue
-  }
-)
-watch(
-  windowId,
-  (newValue) => {
-    windowId.value = newValue
-  }
-)
-watch(
-  showMaximizeButton,
-  (newValue) => {
-    showMaximizeButton.value = newValue
-    buttonCol()
-  }
-)
-watch(
-  showMinimizeButton,
-  (newValue) => {
-    showMinimizeButton.value = newValue
-    buttonCol()
-  }
-)
-onMounted(() => {
-  buttonCol()
-})
 </script>
 
 <template>
@@ -235,13 +120,12 @@ onMounted(() => {
   >
     <div
       class="toolbar"
-      :style="`grid-template-columns: 24px 1fr ${buttonAreaWidth}px; `"
     >
       <div class="icon" :style="`background-image: url('${titleIcon}');`" />
       <div class="title">
         {{ title }}
       </div>
-      <div class="buttons" :style="`grid-template-columns: repeat(${buttonsCol}, 1fr);`">
+      <div class="buttons">
         <div v-if="showMinimizeButton" class="button" @click="minimize">
           &#9472;
         </div>
@@ -263,22 +147,20 @@ onMounted(() => {
 .icon {
   width: 16px;
   height: 16px;
-
+  @apply mx-2;
   background-size: cover;
   justify-self: center;
 }
 
 .buttons {
-  height: 100%;
-  display: grid;
+  @apply h-full ms-auto flex;
 }
 
 .button {
+  width: 46.6px;
   font-size: 14px;
   cursor: default;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @apply h-full flex items-center justify-center;
 }
 
 .button:hover {
@@ -314,7 +196,7 @@ onMounted(() => {
 
   .toolbar {
     @apply !bg-transparent;
-    @apply grid items-center select-none;
+    @apply flex items-center select-none;
     padding-left: 4px;
     font-family: Arial, Helvetica, sans-serif !important;
     font-size: 12px;
