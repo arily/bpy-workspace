@@ -34,7 +34,7 @@ function entryClicked(window: IWindow) {
       </template>
       <template v-if="[...managedWindow.values()].every(i => i.value.active)">
         <div class="text-xl opacity-25">
-          Boot station
+          GuCamp
         </div>
       </template>
     </div>

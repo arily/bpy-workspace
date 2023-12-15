@@ -16,6 +16,7 @@ const {
   runApp,
   bootConfig,
   validated,
+  id,
 } = useWorkspace()
 
 const window = createWindow({
@@ -104,23 +105,23 @@ manageWindow(window)
         </template>
 
         <template v-else-if="bootConfig.db.type === Database.MySQL">
-          <label class="label input input-bordered">
+          <label class="label input join-item input-bordered">
             <span class="label-text">mysql://</span>
           </label>
           <input v-model="bootConfig.db.user" type="text" class="join-item input-bordered input grow" placeholder="user">
-          <label class="label input input-bordered">
+          <label class="label input join-item input-bordered">
             <span class="label-text">:</span>
           </label>
           <input v-model="bootConfig.db.password" type="text" class="join-item input-bordered input grow" placeholder="password">
-          <label class="label input input-bordered">
+          <label class="label input join-item input-bordered">
             <span class="label-text">@</span>
           </label>
           <input v-model="bootConfig.db.address" type="text" class="join-item input-bordered input grow" placeholder="host">
-          <label class="label input input-bordered">
+          <label class="label input join-item input-bordered">
             <span class="label-text">:</span>
           </label>
           <input v-model="bootConfig.db.port" type="text" class="join-item input-bordered input grow" placeholder="port">
-          <label class="label input input-bordered">
+          <label class="label input join-item input-bordered">
             <span class="label-text">/</span>
           </label>
           <input v-model="bootConfig.db.database" type="text" class="join-item input-bordered input grow" placeholder="database">
@@ -128,17 +129,29 @@ manageWindow(window)
       </div>
       <div
         v-if="validated"
-        class="join"
+        class="flex"
       >
-        <button
-          class="join-item btn" @click="prepare"
+        <div
+          v-if="validated"
+          class="join"
         >
-          prepare
-        </button>
+          <button
+            class="join-item btn btn-secondary" @click="prepare"
+          >
+            Parse .env files to env Object
+          </button>
+          <button
+            v-if="id"
+            class="join-item btn btn-success"
+          >
+            Save
+          </button>
+        </div>
+
         <button
-          class="join-item btn" @click="runApp"
+          class="btn ms-auto btn-warning" @click="runApp"
         >
-          run
+          Run new instance
         </button>
       </div>
     </div>

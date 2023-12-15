@@ -21,6 +21,8 @@ export function processSw() {
     reloading: pending,
     async killTask(task: number) {
       const rValue = await $fetch('/api/runner/kill', { method: 'post', body: { id: task } })
+      // console.log(rValue)
+      await refresh()
     },
   }
 }

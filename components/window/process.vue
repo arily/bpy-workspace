@@ -13,6 +13,9 @@ const {
 const window = createWindow({
   title: 'Processes',
   active: true,
+  minWidth: 300,
+  minHeight: 200,
+  width: 500,
 })
 manageWindow(window)
 const { list, switch: switchProcess, killTask, reload } = useProcessSwitch()
@@ -51,11 +54,11 @@ const { id } = useWorkspace()
     @click-destroy="window.active = false"
   >
     <div class="flex flex-col h-full p-2">
-      <div class="overflow-auto shrink">
+      <div class="overflow-y-auto">
         <div
           v-for="(v, key) in list"
           :key="key"
-          class="collapse collapse-plus bg-base-200"
+          class="mb-2 collapse collapse-plus bg-base-100"
         >
           <input type="radio" name="my-accordion-2" :checked="v.id === id" @click="switchProcess(v.id)">
           <div class="text-xl font-medium collapse-title">
@@ -76,9 +79,9 @@ const { id } = useWorkspace()
           </div>
         </div>
       </div>
-      <div class="self-end mt-auto">
-        <button class="btn" @click="reload()">
-          (WIP) refresh
+      <div class="flex w-full mt-auto">
+        <button class="btn ms-auto btn-success" @click="reload()">
+          (WIP) Refresh
         </button>
       </div>
     </div>
