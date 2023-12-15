@@ -25,7 +25,6 @@ const {
     v-model:window-id="error.value.id"
     v-model:title="error.value.title"
     v-model:title-icon="error.value.titleIconURL"
-    class="!absolute"
     :class="{
       active: activeWindowId === error.value.id,
     }"

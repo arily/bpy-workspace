@@ -5,6 +5,7 @@ const {
   createWindow,
   windowEventEnd,
   windowEventStart,
+  manageWindow,
   moveWindowToTop,
   windowLayer,
   activeWindowId,
@@ -27,6 +28,7 @@ const window = createWindow({
   minWidth: 700,
   minHeight: 300,
 })
+manageWindow(window)
 </script>
 
 <template>
@@ -42,7 +44,6 @@ const window = createWindow({
     v-model:window-id="window.id"
     v-model:title="window.title"
     v-model:title-icon="window.titleIconURL"
-    class="!absolute"
     :class="{
       active: activeWindowId === window.id,
     }"

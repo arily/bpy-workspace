@@ -1,0 +1,9 @@
+@import './windows11';
+
+.obaWindowStyle {
+  @apply rounded-b-md;
+
+  > .window-content > *:last-child {
+    @apply rounded-b-md;
+  }
+}

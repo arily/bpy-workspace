@@ -7,6 +7,7 @@ const {
   windowEventStart,
   moveWindowToTop,
   windowLayer,
+  manageWindow,
   activeWindowId,
 } = useGlobalWindowManager()
 
@@ -17,7 +18,7 @@ const {
   validated,
 } = useWorkspace()
 
-const control = createWindow({
+const window = createWindow({
   id: Symbol('control'),
   title: 'Control',
   titleIconURL: 'https://cdn-icons-png.flaticon.com/512/337/337948.png',
@@ -30,27 +31,27 @@ const control = createWindow({
   minWidth: 700,
   minHeight: 300,
 })
+manageWindow(window)
 </script>
 
 <template>
   <VueWindowManager
-    v-model:is-active="control.active"
-    v-model:top="control.top"
-    v-model:left="control.left"
-    v-model:width="control.width"
-    v-model:height="control.height"
-    v-model:min-width="control.minWidth"
-    v-model:min-height="control.minHeight"
-    v-model:is-dragging="control.dragging"
-    v-model:window-id="control.id"
-    v-model:title="control.title"
-    v-model:title-icon="control.titleIconURL"
-    class="!absolute"
+    v-model:is-active="window.active"
+    v-model:top="window.top"
+    v-model:left="window.left"
+    v-model:width="window.width"
+    v-model:height="window.height"
+    v-model:min-width="window.minWidth"
+    v-model:min-height="window.minHeight"
+    v-model:is-dragging="window.dragging"
+    v-model:window-id="window.id"
+    v-model:title="window.title"
+    v-model:title-icon="window.titleIconURL"
     :class="{
-      active: activeWindowId === control.id,
+      active: activeWindowId === window.id,
     }"
     :style="{
-      'z-index': 1 + windowLayer.indexOf(control.id),
+      'z-index': 1 + windowLayer.indexOf(window.id),
     }"
     :is-resizing="['r', 'rb', 'b', 'lb', 'l', 'lt', 't', 'rt']"
     :show-maximize-button="false"
@@ -62,7 +63,7 @@ const control = createWindow({
     @drag-end="windowEventEnd"
     @resize-end="windowEventEnd"
     @click-window="moveWindowToTop"
-    @click-destroy="control.active = false"
+    @click-destroy="window.active = false"
   >
     <div class="flex flex-col h-full gap-2 p-2">
       <select id="preset" v-model="bootConfig.preset" class="select" name="preset">
@@ -77,8 +78,8 @@ const control = createWindow({
           Production
         </option>
       </select>
-      <div class="join">
-        <select id="database" v-model="bootConfig.db.type" class="select join-item" name="database">
+      <div class="flex flex-wrap join">
+        <select id="database" v-model="bootConfig.db.type" class="select input-bordered join-item" name="database">
           <option :value="Database.Unset" disabled>
             Select Database
           </option>
@@ -93,11 +94,36 @@ const control = createWindow({
             DSN
           </option>
         </select>
+
         <template v-if="bootConfig.db.type === Database.SQLite">
-          <input v-model="bootConfig.db.file" type="text" class="join-item input grow" placeholder=".db path or 'memory'">
+          <input v-model="bootConfig.db.file" type="text" class="join-item input input-bordered grow" placeholder=".db path or 'memory'">
         </template>
+
         <template v-else-if="bootConfig.db.type === Database.DSN">
-          <input v-model="bootConfig.db.dsn" type="text" class="join-item input grow" placeholder="DSN">
+          <input v-model="bootConfig.db.dsn" type="text" class="join-item input-bordered input grow" placeholder="DSN">
+        </template>
+
+        <template v-else-if="bootConfig.db.type === Database.MySQL">
+          <label class="label input input-bordered">
+            <span class="label-text">mysql://</span>
+          </label>
+          <input v-model="bootConfig.db.user" type="text" class="join-item input-bordered input grow" placeholder="user">
+          <label class="label input input-bordered">
+            <span class="label-text">:</span>
+          </label>
+          <input v-model="bootConfig.db.password" type="text" class="join-item input-bordered input grow" placeholder="password">
+          <label class="label input input-bordered">
+            <span class="label-text">@</span>
+          </label>
+          <input v-model="bootConfig.db.address" type="text" class="join-item input-bordered input grow" placeholder="host">
+          <label class="label input input-bordered">
+            <span class="label-text">:</span>
+          </label>
+          <input v-model="bootConfig.db.port" type="text" class="join-item input-bordered input grow" placeholder="port">
+          <label class="label input input-bordered">
+            <span class="label-text">/</span>
+          </label>
+          <input v-model="bootConfig.db.database" type="text" class="join-item input-bordered input grow" placeholder="database">
         </template>
       </div>
       <div

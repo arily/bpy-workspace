@@ -46,7 +46,7 @@ defineExpose({
     v-model:window-id="edit.id"
     v-model:title="edit.title"
     v-model:title-icon="edit.titleIconURL"
-    class="!absolute h-0"
+    class="h-0"
     :class="{
       active: activeWindowId === edit.id,
     }"

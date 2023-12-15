@@ -40,7 +40,7 @@ manageWindow(debug)
     v-model:window-id="debug.id"
     v-model:title="debug.title"
     v-model:title-icon="debug.titleIconURL"
-    class="!absolute"
+    class="overflow-clip"
     :class="{
       active: activeWindowId === debug.id,
     }"
@@ -58,7 +58,7 @@ manageWindow(debug)
     @click-window="moveWindowToTop"
     @click-destroy="debug.active = false"
   >
-    <div v-for="([sym, window]) in managedWindow" :key="sym">
+    <div v-for="([sym, window]) in managedWindow" :key="sym" class="font-mono">
       [ {{ window.value.top }},
       {{ window.value.left }} ] {{ sym }}
       <template v-if="activeWindow?.id === window.value.id">

@@ -2,13 +2,14 @@
 const {
   createWindow,
   windowEventEnd,
+  manageWindow,
   windowEventStart,
   moveWindowToTop,
   windowLayer,
   activeWindowId,
 } = useGlobalWindowManager()
 
-const { stderr, stdout } = useWorkspace()
+const { id, stderr, stdout } = useWorkspace()
 
 const window = createWindow({
   id: Symbol('Logs'),
@@ -22,6 +23,15 @@ const window = createWindow({
   height: 507,
   minWidth: 700,
   minHeight: 300,
+})
+manageWindow(window)
+watch(() => [stderr, stdout], () => {
+  if (!id) {
+    window.value.active = false
+  }
+  if (!stderr.value.length && !stdout.value.length) {
+    window.value.active = false
+  }
 })
 </script>
 
@@ -38,7 +48,6 @@ const window = createWindow({
     v-model:window-id="window.id"
     v-model:title="window.title"
     v-model:title-icon="window.titleIconURL"
-    class="!absolute"
     :class="{
       active: activeWindowId === window.id,
     }"
@@ -57,7 +66,7 @@ const window = createWindow({
     @click-window="moveWindowToTop"
     @click-destroy="window.active = false"
   >
-    <div class="">
+    <div class="p-2">
       <pre>stdout
 <code v-for="i, index in stdout" :key="index">
   {{ i }}

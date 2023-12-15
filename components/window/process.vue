@@ -5,6 +5,7 @@ const {
   activeWindowId,
   windowEventEnd,
   windowEventStart,
+  manageWindow,
   windowLayer,
   moveWindowToTop,
   createWindow,
@@ -13,6 +14,7 @@ const window = createWindow({
   title: 'Processes',
   active: true,
 })
+manageWindow(window)
 const { list, switch: switchProcess, killTask, reload } = useProcessSwitch()
 const { id } = useWorkspace()
 </script>
@@ -30,7 +32,7 @@ const { id } = useWorkspace()
     v-model:window-id="window.id"
     v-model:title="window.title"
     v-model:title-icon="window.titleIconURL"
-    class="!absolute"
+    class="overflow-clip"
     :class="{
       active: activeWindowId === window.id,
     }"
@@ -48,12 +50,12 @@ const { id } = useWorkspace()
     @click-window="moveWindowToTop"
     @click-destroy="window.active = false"
   >
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col h-full p-2">
       <div class="overflow-auto shrink">
         <div
           v-for="(v, key) in list"
           :key="key"
-          class="collapse collapse-arrow bg-base-200"
+          class="collapse collapse-plus bg-base-200"
         >
           <input type="radio" name="my-accordion-2" :checked="v.id === id" @click="switchProcess(v.id)">
           <div class="text-xl font-medium collapse-title">
@@ -82,5 +84,3 @@ const { id } = useWorkspace()
     </div>
   </VueWindowManager>
 </template>
-
-<style scoped></style>

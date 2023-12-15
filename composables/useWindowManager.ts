@@ -48,6 +48,8 @@ export default function () {
       left: 0,
       width: 200,
       height: 200,
+      minHeight: 50,
+      minWidth: 50,
       ...opt,
     } satisfies WindowOption)
   }
