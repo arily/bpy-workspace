@@ -9,7 +9,7 @@ const {
   activeWindowId,
 } = useGlobalWindowManager()
 
-const { id, stderr, stdout } = useWorkspace()
+const { stderr, stdout, id } = useWorkspace()
 
 const window = createWindow({
   id: Symbol('Logs'),
@@ -25,6 +25,7 @@ const window = createWindow({
   minHeight: 300,
 })
 manageWindow(window)
+
 watch(() => [stderr, stdout], () => {
   if (!id) {
     window.value.active = false
@@ -58,7 +59,6 @@ watch(() => [stderr, stdout], () => {
     :show-maximize-button="false"
     :show-minimize-button="false"
     :is-maximized="false"
-    :max-height="500"
     @drag-start="windowEventStart"
     @resize-start="windowEventStart"
     @drag-end="windowEventEnd"
@@ -66,13 +66,17 @@ watch(() => [stderr, stdout], () => {
     @click-window="moveWindowToTop"
     @click-destroy="window.active = false"
   >
-    <div class="p-2">
-      <pre>stdout
-<code v-for="i, index in stdout" :key="index">
+    <div class="relative w-full h-full bg-indigo-900">
+      <pre class="inline-block w-full overflow-y-auto h-1/2">
+<span class="text-white">stdout</span>
+<code v-for="i, index in workspace.stdout.value" :key="index" class="text-white">
   {{ i }}
 </code>
-stderr
-<code v-for="i, index in stderr" :key="index">
+</pre>
+
+      <pre class="inline-block w-full overflow-y-auto border-t-2 h-1/2">
+<span class="text-error">stderr</span>
+<code v-for="i, index in workspace.stderr.value" :key="index" class="text-error">
   {{ i }}
 </code>
       </pre>

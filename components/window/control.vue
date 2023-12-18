@@ -11,14 +11,8 @@ const {
   activeWindowId,
 } = useGlobalWindowManager()
 
-const {
-  prepare,
-  runApp,
-  bootConfig,
-  validated,
-  id,
-} = useWorkspace()
-
+const { list, activeId } = useProcessSwitch()
+const { bootConfig, validated } = useWorkspace()
 const window = createWindow({
   id: Symbol('control'),
   title: 'Control',
@@ -67,6 +61,7 @@ manageWindow(window)
     @click-destroy="window.active = false"
   >
     <div class="flex flex-col h-full gap-2 p-2">
+      <input v-model="bootConfig.python.bin" type="text" class="input input-bordered" placeholder="python executable location">
       <select id="preset" v-model="bootConfig.preset" class="select" name="preset">
         <option :value="Preset.Unset" disabled>
           Select preset
@@ -77,6 +72,9 @@ manageWindow(window)
         </option>
         <option :value="Preset.Prod">
           Production
+        </option>
+        <option :value="Preset.Custom">
+          Custom Config
         </option>
       </select>
       <div class="flex flex-wrap join">
@@ -128,31 +126,38 @@ manageWindow(window)
         </template>
       </div>
       <div
-        v-if="validated"
-        class="flex"
+        class="flex gap-4"
       >
+        <button
+          class="btn btn-warning" @click="workspace.reset({ id: activeId })"
+        >
+          Reset
+        </button>
         <div
           v-if="validated"
           class="join"
         >
           <button
-            class="join-item btn btn-secondary" @click="prepare"
+            class="join-item btn btn-secondary" @click="workspace.readEnvFromFile"
           >
             Parse .env files to env Object
           </button>
           <button
-            v-if="id"
+            v-if="list && workspace.id?.value && (workspace.id.value in list)"
             class="join-item btn btn-success"
           >
             Save
           </button>
         </div>
 
-        <button
-          class="btn ms-auto btn-warning" @click="runApp"
-        >
-          Run new instance
-        </button>
+        <div class="flex gap-4 ms-auto">
+          <button
+            v-if="validated"
+            class="btn btn-warning" @click="workspace.runApp"
+          >
+            Run new instance
+          </button>
+        </div>
       </div>
     </div>
   </VueWindowManager>

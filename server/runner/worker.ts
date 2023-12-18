@@ -1,4 +1,4 @@
-import { type ChildProcessWithoutNullStreams, spawn } from 'node:child_process'
+import { type ChildProcessWithoutNullStreams, exec, spawn } from 'node:child_process'
 import { EventEmitter } from 'node:events'
 import type { Buffer } from 'node:buffer'
 import { type Config, ProcessStatus } from '~/types'
@@ -18,10 +18,11 @@ export class Worker {
     this.config = config
   }
 
-  run() {
+  async run() {
     const conf = useRuntimeConfig()
-    const exec = spawn('python3', ['main.py'], { cwd: this.config.cwd || conf.bpyLocation, env: this.config.env as NodeJS.ProcessEnv })
+    const exec = spawn(this.config.python.bin, [this.config.python.entry || 'main.py'], { cwd: this.config.cwd || conf.bpyLocation, env: this.config.env as NodeJS.ProcessEnv })
 
+    console.log('pid:', exec.pid)
     this.id = exec.pid ?? err('exec\'d returns no pid')
     this.work = exec
     this.status = ProcessStatus.Running
@@ -48,6 +49,8 @@ export class Worker {
     this.status = ProcessStatus.Exited
     this.exitCode = code
     this.ee.emit('exited')
+
+    // eslint-disable-next-line no-console
     console.info(`child process exited with code ${code}`)
   }
 
@@ -60,5 +63,29 @@ export class Worker {
       stderr: this.stderr,
       config: this.config,
     }
+  }
+
+  serializeList() {
+    return {
+      id: this.id,
+      exitCode: this.exitCode,
+      status: this.status,
+      stdout: this.stdout.at(-1),
+      stderr: this.stderr.at(-1),
+      config: this.config,
+    }
+  }
+
+  #postKill() {
+    this.id = 0
+  }
+
+  kill(signal?: number): boolean {
+    const res = (this.work ?? err('not running'))?.kill(signal)
+    if (res) {
+      this.#postKill()
+    }
+
+    return res
   }
 }

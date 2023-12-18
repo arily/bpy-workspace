@@ -11,6 +11,7 @@ export enum Preset {
   Unset,
   Dev = 'dev',
   Prod = 'prod',
+  Custom = 'custom',
 }
 
 export enum ProcessStatus {
@@ -32,6 +33,8 @@ export type DBConfig = {
 } | {
   type: Database.DSN
   dsn: string
+} | {
+  type: Database.Unset
 }
 
 export interface Config {
@@ -39,6 +42,10 @@ export interface Config {
   preset: Preset
   cwd?: string
   env: Record<string, unknown>
+  python: {
+    bin: string
+    entry?: string
+  }
 }
 
 export const configValidator: ZodSchema<Config> = object({
@@ -50,4 +57,19 @@ export const configValidator: ZodSchema<Config> = object({
   preset: nativeEnum(Preset),
   cwd: string().optional(),
   env: record(string(), unknown()),
+  python: object({
+    bin: string(),
+    entry: string().optional(),
+  }),
 })
+
+export enum WorkerEventType {
+  Stdout = 'stdout',
+  Stderr = 'stderr',
+  Exited = 'exited',
+}
+
+export type WorkerEvent =
+| [WorkerEventType.Stdout | WorkerEventType.Stderr, string]
+| [WorkerEventType.Exited]
+| ['test', 'test']

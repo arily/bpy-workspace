@@ -13,13 +13,14 @@ const {
 const window = createWindow({
   title: 'Processes',
   active: true,
+  left: 800,
   minWidth: 300,
   minHeight: 200,
   width: 500,
+  height: 800,
 })
 manageWindow(window)
 const { list, switch: switchProcess, killTask, reload } = useProcessSwitch()
-const { id } = useWorkspace()
 </script>
 
 <template>
@@ -60,7 +61,7 @@ const { id } = useWorkspace()
           :key="key"
           class="mb-2 collapse collapse-plus bg-base-100"
         >
-          <input type="radio" name="my-accordion-2" :checked="v.id === id" @click="switchProcess(v.id)">
+          <input type="radio" name="my-accordion-2" :checked="v.id === workspace.id.value" @click="switchProcess(v.id)">
           <div class="text-xl font-medium collapse-title">
             Process {{ key }}
             <template v-if="v.status === ProcessStatus.Exited">

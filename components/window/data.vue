@@ -11,10 +11,6 @@ const {
   activeWindowId,
 } = useGlobalWindowManager()
 
-const {
-  bootConfig,
-} = useWorkspace()
-
 const window = createWindow({
   id: Symbol('data'),
   title: 'Start Config',
@@ -62,6 +58,6 @@ manageWindow(window)
     @click-window="moveWindowToTop"
     @click-destroy="window.active = false"
   >
-    <DataComponent v-model="bootConfig" class="absolute w-full h-full overflow-visible" />
+    <DataComponent v-model="workspace.bootConfig.value" class="absolute w-full h-full overflow-visible" />
   </VueWindowManager>
 </template>
