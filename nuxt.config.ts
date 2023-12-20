@@ -12,8 +12,10 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
+      // NUXT_PUBLIC_CWD
       cwd: dirname(fileURLToPath(import.meta.url)),
+      // NUXT_PUBLIC_BPY_LOCATION
+      bpyLocation: '/ppy-sb/bancho.py',
     },
-    bpyLocation: '/Users/Shared/git/ppy-sb/bancho.py',
   },
 })

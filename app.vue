@@ -6,8 +6,6 @@ const {
   interacting,
 } = useGlobalWindowManager()
 
-const ws = workspace
-
 const editWindow = ref<InstanceType<typeof WindowEdit>>()
 </script>
 
@@ -19,7 +17,7 @@ const editWindow = ref<InstanceType<typeof WindowEdit>>()
         interacting,
       }"
     >
-      <WindowEdit ref="editWindow" v-model:content="ws.env.value" default-language="ini" />
+      <WindowEdit ref="editWindow" v-model:content="workspace.env.value" default-language="ini" />
       <window-control :edit="editWindow" />
       <window-data />
       <window-errors />

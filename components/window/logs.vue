@@ -26,14 +26,17 @@ const window = createWindow({
 })
 manageWindow(window)
 
-watch(() => [stderr, stdout], () => {
-  if (!id) {
-    window.value.active = false
+watch(
+  () => [stderr, stdout],
+  () => {
+    if (!id) {
+      window.value.active = false
+    }
+    if (!stderr.value.length && !stdout.value.length) {
+      window.value.active = false
+    }
   }
-  if (!stderr.value.length && !stdout.value.length) {
-    window.value.active = false
-  }
-})
+)
 </script>
 
 <template>
@@ -66,20 +69,38 @@ watch(() => [stderr, stdout], () => {
     @click-window="moveWindowToTop"
     @click-destroy="window.active = false"
   >
-    <div class="relative w-full h-full bg-indigo-900">
-      <pre class="inline-block w-full overflow-y-auto h-1/2">
+    <div id="logs" class="relative w-full h-full p-1 bg-indigo-900">
+      <pre
+        v-if="stdout.length"
+        class="inline-block w-full overflow-y-auto h-1/2"
+      >
 <span class="text-white">stdout</span>
-<code v-for="i, index in workspace.stdout.value" :key="index" class="text-white">
+<code v-for="i, index in workspace.stdout.value" :key="index" class="text-white lazy-render">
   {{ i }}
 </code>
 </pre>
 
-      <pre class="inline-block w-full overflow-y-auto border-t-2 h-1/2">
+      <pre
+        v-if="stderr.length"
+        class="inline-block w-full overflow-y-auto h-1/2"
+      >
 <span class="text-error">stderr</span>
-<code v-for="i, index in workspace.stderr.value" :key="index" class="text-error">
+<code v-for="i, index in workspace.stderr.value" :key="index" class="text-error lazy-render">
   {{ i }}
 </code>
       </pre>
     </div>
   </VueWindowManager>
 </template>
+
+<style scoped lang="postcss">
+.lazy-render {
+  content-visibility: auto;
+}
+
+#logs {
+  pre + pre {
+    @apply border-t-2
+  }
+}
+</style>

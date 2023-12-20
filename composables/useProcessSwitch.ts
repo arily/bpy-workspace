@@ -10,24 +10,16 @@ export function processSw() {
   const { data: list, refresh, pending } = useFetch('/api/runner/list')
   const activeId = ref<number>(-1)
   return {
-    switch(id: number) {
-      if (!list.value) {
-        return
-      }
-      if (!(id in list.value)) {
-        err(`unknown id: ${id}`)
-      }
-      const cur = list.value[id]
-      if (!cur) {
-        err('unknown pid')
-      }
+    interval: setInterval(() => refresh(), 3000),
+    async switch(id: number) {
+      const cur = await $fetch('/api/runner/get', { query: { id } })
       let _workspace
       _workspace = workspaces.get(id)
       if (!_workspace) {
         _workspace = createWorkspace()
         workspaces.set(id, _workspace)
       }
-      _workspace.reset({ ...cur, stderr: [cur.stderr], stdout: [cur.stdout] })
+      _workspace.reset(cur)
       _workspace.stream()
       activeId.value = id
     },

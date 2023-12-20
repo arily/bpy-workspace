@@ -12,7 +12,7 @@ const {
 } = useGlobalWindowManager()
 
 const { list, activeId } = useProcessSwitch()
-const { bootConfig, validated } = useWorkspace()
+const { bootConfig, validated, env } = useWorkspace()
 const window = createWindow({
   id: Symbol('control'),
   title: 'Control',
@@ -73,14 +73,14 @@ manageWindow(window)
         <option :value="Preset.Prod">
           Production
         </option>
-        <option :value="Preset.Custom">
+        <!-- <option :value="Preset.Custom">
           Custom Config
-        </option>
+        </option> -->
       </select>
       <div class="flex flex-wrap join">
         <select id="database" v-model="bootConfig.db.type" class="select input-bordered join-item" name="database">
           <option :value="Database.Unset" disabled>
-            Select Database
+            No Database config
           </option>
 
           <option :value="Database.SQLite">
@@ -94,11 +94,11 @@ manageWindow(window)
           </option>
         </select>
 
-        <template v-if="bootConfig.db.type === Database.SQLite">
+        <!-- <template v-if="bootConfig.db.type === Database.SQLite">
           <input v-model="bootConfig.db.file" type="text" class="join-item input input-bordered grow" placeholder=".db path or 'memory'">
-        </template>
+        </template> -->
 
-        <template v-else-if="bootConfig.db.type === Database.DSN">
+        <template v-if="bootConfig.db.type === Database.DSN">
           <input v-model="bootConfig.db.dsn" type="text" class="join-item input-bordered input grow" placeholder="DSN">
         </template>
 
@@ -128,20 +128,23 @@ manageWindow(window)
       <div
         class="flex gap-4"
       >
-        <button
-          class="btn btn-warning" @click="workspace.reset({ id: activeId })"
-        >
-          Reset
-        </button>
-        <div
-          v-if="validated"
-          class="join"
-        >
+        <div class="join">
           <button
+            class="join-item btn btn-warning" @click="workspace.reset({ id: activeId })"
+          >
+            Reset
+          </button>
+          <button
+            v-if="env"
             class="join-item btn btn-secondary" @click="workspace.readEnvFromFile"
           >
             Parse .env files to env Object
           </button>
+        </div>
+        <div
+          v-if="validated"
+          class="join"
+        >
           <button
             v-if="list && workspace.id?.value && (workspace.id.value in list)"
             class="join-item btn btn-success"

@@ -79,6 +79,7 @@ export default function () {
     })
     console.error(e)
     if (e instanceof Error) {
+      // eslint-disable-next-line n/prefer-global/process
       e = process.dev
         ? e.stack
         : e.message

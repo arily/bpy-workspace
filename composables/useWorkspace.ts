@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import { type Config, Database, Preset, type ProcessStatus, WorkerEventType, configValidator } from '~/types'
+import { type Config, Database, type EmptyConfig, Preset, type ProcessStatus, WorkerEventType, configValidator } from '~/types'
 
 export type Workspace = ReturnType<typeof createWorkspace>
 export const workspace = computed(() => {
@@ -42,7 +42,7 @@ export function useWorkspace() {
   }
 }
 
-const empty: Config = {
+const empty: EmptyConfig = {
   db: { type: Database.Unset },
   preset: Preset.Unset,
   env: {},
@@ -57,7 +57,7 @@ export function createWorkspace(val?: { config?: Config; id?: number; stderr?: s
   const stdout = ref<string[]>([])
   const stderr = ref<string[]>([])
   const status = ref<ProcessStatus>(0)
-  const bootConfig = ref<Config>(empty as any)
+  const bootConfig = ref<Config | EmptyConfig>(empty as any)
   const env = ref<string>()
   $fetch('/api/env/get').then(v => env.value = v)
 

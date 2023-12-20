@@ -1,6 +1,7 @@
 import { type ChildProcessWithoutNullStreams, exec, spawn } from 'node:child_process'
 import { EventEmitter } from 'node:events'
 import type { Buffer } from 'node:buffer'
+import { logger } from '../logger'
 import { type Config, ProcessStatus } from '~/types'
 
 export class Worker {
@@ -20,29 +21,43 @@ export class Worker {
 
   async run() {
     const conf = useRuntimeConfig()
-    const exec = spawn(this.config.python.bin, [this.config.python.entry || 'main.py'], { cwd: this.config.cwd || conf.bpyLocation, env: this.config.env as NodeJS.ProcessEnv })
 
-    console.log('pid:', exec.pid)
-    this.id = exec.pid ?? err('exec\'d returns no pid')
-    this.work = exec
-    this.status = ProcessStatus.Running
+    try {
+      const exec = spawn(this.config.python.bin, [this.config.python.entry || 'main.py'], { cwd: this.config.cwd || conf.public.bpyLocation, env: this.config.env as NodeJS.ProcessEnv })
 
-    exec.stdout.on('data', this.logStdout.bind(this))
-    exec.stderr.on('data', this.logStderr.bind(this))
-    exec.on('close', this.markClosed.bind(this))
-    return this
+      logger.info('started process:', exec.pid)
+      this.id = exec.pid ?? err('exec\'d returns no pid')
+      this.work = exec
+      this.status = ProcessStatus.Running
+
+      exec.stdout.on('data', this.logStdout.bind(this))
+      exec.stderr.on('data', this.logStderr.bind(this))
+      exec.on('close', this.markClosed.bind(this))
+      exec.on('error', this.logStderr.bind(this))
+
+      return this
+    }
+    catch (e) {
+      if (e instanceof Error) {
+        this.stderr.push(e.message)
+      }
+    }
   }
 
   logStdout(data: Buffer) {
     const str = data.toString()
     this.stdout.push(str)
     this.ee.emit('stdout', str)
+    // eslint-disable-next-line n/prefer-global/process
+    process.dev && logger.info(str)
   }
 
   logStderr(data: Buffer) {
     const str = data.toString()
     this.stderr.push(str)
     this.ee.emit('stderr', str)
+    // eslint-disable-next-line n/prefer-global/process
+    process.dev && logger.error(str)
   }
 
   markClosed(code: number) {
@@ -50,8 +65,7 @@ export class Worker {
     this.exitCode = code
     this.ee.emit('exited')
 
-    // eslint-disable-next-line no-console
-    console.info(`child process exited with code ${code}`)
+    logger.info(`child process exited with code ${code}`)
   }
 
   serialize() {
