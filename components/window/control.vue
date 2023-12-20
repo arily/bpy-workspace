@@ -11,8 +11,8 @@ const {
   activeWindowId,
 } = useGlobalWindowManager()
 
-const { list, activeId } = useProcessSwitch()
-const { bootConfig, validated, env } = useWorkspace()
+const { list, activeId, restart } = useProcessSwitch()
+const { bootConfig, validated, env, id } = useWorkspace()
 const window = createWindow({
   id: Symbol('control'),
   title: 'Control',
@@ -146,10 +146,11 @@ manageWindow(window)
           class="join"
         >
           <button
-            v-if="list && workspace.id?.value && (workspace.id.value in list)"
+            v-if="list && id && id !== -1 && (id in list)"
             class="join-item btn btn-success"
+            @click="restart()"
           >
-            Save
+            Restart
           </button>
         </div>
 

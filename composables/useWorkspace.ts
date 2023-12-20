@@ -52,7 +52,6 @@ const empty: EmptyConfig = {
 }
 export function createWorkspace(val?: { config?: Config; id?: number; stderr?: string[]; stdout?: string[] }) {
   const { popupError } = useGlobalWindowManager()
-  const conf = useRuntimeConfig()
   const id = ref<number>()
   const stdout = ref<string[]>([])
   const stderr = ref<string[]>([])
@@ -133,6 +132,7 @@ export function createWorkspace(val?: { config?: Config; id?: number; stderr?: s
       unstream()
     })
   }
+
   return {
     id,
     stdout,
