@@ -100,7 +100,7 @@ export function createWorkspace(val?: { config?: Config; id?: number; stderr?: s
       case Preset.Dev: {
         bootConfig.value.db = {
           type: Database.DSN,
-          dsn: `sqlite://${conf.public.cwd}/.data/dev.db`,
+          dsn: 'mysql://root@localhost/bancho_py',
         }
       }
     }
@@ -147,6 +147,11 @@ export function createWorkspace(val?: { config?: Config; id?: number; stderr?: s
     stream,
     validated: computed(() => {
       const result = configValidator.safeParse(bootConfig.value)
+      // eslint-disable-next-line n/prefer-global/process
+      if (process.dev && !result.success) {
+        // eslint-disable-next-line no-console
+        console.log(result.error)
+      }
       return result.success
     }),
   }

@@ -11,6 +11,9 @@ dependencies:
   '@guolao/vue-monaco-editor':
     specifier: ^1.4.0
     version: 1.4.0(monaco-editor@0.43.0)(vue@3.3.8)
+  '@soluble/dsn-parser':
+    specifier: ^1.9.2
+    version: 1.9.2
   '@types/formidable':
     specifier: ^3.4.5
     version: 3.4.5
@@ -1976,6 +1979,10 @@ packages:
     resolution: {integrity: sha512-rUV5WyJrJLoloD4NDN1V1+LDMDWOa4OTsT4yYJwQNpTU6FWxkxHpL7eu4w+DmiH8x/EAM1otkPE1+LaspIbplw==}
     engines: {node: '>=18'}
     dev: true
+
+  /@soluble/dsn-parser@1.9.2:
+    resolution: {integrity: sha512-FgkvHHHSCzjQ1/ouW6Vtw2hy0k5/KWeu116swH5VYX267I4rx+8MCy9/6eZ60IWGIQVNgh0sektKAu0n9gtzzA==}
+    dev: false
 
   /@stylistic/eslint-plugin-js@0.0.4:
     resolution: {integrity: sha512-W1rq2xxlFNhgZZJO+L59wtvlDI0xARYxx0WD8EeWNBO7NDybUSYSozCIcY9XvxQbTAsEXBjwqokeYm0crt7RxQ==}

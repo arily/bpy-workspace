@@ -29,7 +29,7 @@ interface SQLiteDatabase {
 
 interface MySQLDatabase {
   type: Database.MySQL
-  address: string
+  host: string
   port?: number
   user?: string
   password?: string
@@ -80,7 +80,7 @@ const noDatabase = object({
 
 const mysqlDatabase = object({
   type: literal(Database.MySQL),
-  address: string(),
+  host: string(),
   port: number().optional(),
   user: string().optional(),
   password: string().optional(),

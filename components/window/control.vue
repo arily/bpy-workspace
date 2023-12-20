@@ -79,11 +79,11 @@ manageWindow(window)
       </select>
       <div class="flex flex-wrap join">
         <select id="database" v-model="bootConfig.db.type" class="select input-bordered join-item" name="database">
-          <option :value="Database.Unset" disabled>
+          <option :value="Database.Unset" :disabled="bootConfig.preset !== Preset.Prod">
             No Database config
           </option>
 
-          <option :value="Database.SQLite">
+          <option :value="Database.SQLite" disabled>
             SQLite
           </option>
           <option :value="Database.MySQL">
@@ -114,7 +114,7 @@ manageWindow(window)
           <label class="label input join-item input-bordered">
             <span class="label-text">@</span>
           </label>
-          <input v-model="bootConfig.db.address" type="text" class="join-item input-bordered input grow" placeholder="host">
+          <input v-model="bootConfig.db.host" type="text" class="join-item input-bordered input grow" placeholder="host">
           <label class="label input join-item input-bordered">
             <span class="label-text">:</span>
           </label>

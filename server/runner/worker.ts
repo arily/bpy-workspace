@@ -1,8 +1,9 @@
-import { type ChildProcessWithoutNullStreams, exec, spawn } from 'node:child_process'
+import { type ChildProcessWithoutNullStreams, spawn } from 'node:child_process'
 import { EventEmitter } from 'node:events'
-import type { Buffer } from 'node:buffer'
+import { type Buffer } from 'node:buffer'
+import { parseDsnOrThrow } from '@soluble/dsn-parser'
 import { logger } from '../logger'
-import { type Config, ProcessStatus } from '~/types'
+import { type Config, Database, Preset, ProcessStatus } from '~/types'
 
 export class Worker {
   config: Config
@@ -19,21 +20,61 @@ export class Worker {
     this.config = config
   }
 
+  // DB_USER=cmyui
+  // DB_PASS=lol123
+  // DB_NAME=banchopy
+  // DB_HOST=mysql
+  // DB_PORT=3306
+  prepareEnv() {
+    const env = structuredClone(this.config.env)
+    const p = this.config
+    switch (p.preset) {
+      case Preset.Prod: {
+        break
+      }
+      case Preset.Dev: {
+        switch (p.db.type) {
+          case Database.DSN: {
+            const parsed = parseDsnOrThrow(p.db.dsn)
+            env.DB_USER = parsed.user
+            env.DB_PASS = parsed.pass
+            env.DB_HOST = parsed.host
+            env.DB_PORT = parsed.port
+            env.DB_NAME = parsed.db
+            break
+          }
+          case Database.MySQL: {
+            env.DB_USER = p.db.user
+            env.DB_PASS = p.db.password
+            env.DB_HOST = p.db.host
+            env.DB_PORT = p.db.port
+            env.DB_NAME = p.db.database
+          }
+        }
+      }
+    }
+    return env
+  }
+
   async run() {
     const conf = useRuntimeConfig()
 
+    const env = this.prepareEnv()
     try {
-      const exec = spawn(this.config.python.bin, [this.config.python.entry || 'main.py'], { cwd: this.config.cwd || conf.public.bpyLocation, env: this.config.env as NodeJS.ProcessEnv })
+      const proc = spawn(this.config.python.bin, [this.config.python.entry || 'main.py'], { cwd: this.config.cwd || conf.public.bpyLocation, env: env as NodeJS.ProcessEnv })
 
-      logger.info('started process:', exec.pid)
-      this.id = exec.pid ?? err('exec\'d returns no pid')
-      this.work = exec
+      this.id = proc.pid ?? err('exec\'d returns no pid')
+      this.work = proc
       this.status = ProcessStatus.Running
 
-      exec.stdout.on('data', this.logStdout.bind(this))
-      exec.stderr.on('data', this.logStderr.bind(this))
-      exec.on('close', this.markClosed.bind(this))
-      exec.on('error', this.logStderr.bind(this))
+      const startLog = `started process: ${proc.pid}`
+      logger.info(startLog)
+      this.stdout.push(startLog)
+
+      proc.stdout.on('data', this.logStdout.bind(this))
+      proc.stderr.on('data', this.logStderr.bind(this))
+      proc.on('close', this.markClosed.bind(this))
+      proc.on('error', this.logStderr.bind(this))
 
       return this
     }
